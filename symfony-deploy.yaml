@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: symfony-deployment
+  labels:
+    app: symfony
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: symfony
+  template:
+    metadata:
+      labels:
+        app: symfony
+    spec:
+      containers:
+      - name: sympony-deployment
+        image: jaggu199/symfony:2.0
+        ports:
+        - containerPort: 80
