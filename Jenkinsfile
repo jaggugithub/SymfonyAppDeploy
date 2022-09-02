@@ -21,6 +21,7 @@ pipeline {
                     // This is to Copy a file From Jenkins Server to k8s master node
                     sh "scp -o StrictHostKeyChecking=no symfony-deploy.yaml ubuntu@${myVar}:/home/ubuntu/deployment"
                     sh "scp -o StrictHostKeyChecking=no symfony-deploy-service.yaml ubuntu@${myVar}:/home/ubuntu/deployment"
+                    sh "docker pull jaggu199/symfony:2"
                 }
                 
             }
