@@ -19,6 +19,10 @@ pipeline {
             steps {
                 sshagent(['aws_ssh_key']) {
                     // This is to Copy a file From Jenkins Server to k8s master node
+                    sh """ssh -tt -o StrictHostKeyChecking=no ubuntu@${masterip} << EOF
+                    cd /home/ubuntu/
+                    mkdir deployment
+                    EOF"""
                     sh "scp -o StrictHostKeyChecking=no symfony-deploy.yaml ubuntu@${masterip}:/home/ubuntu/deployment"
                     sh "scp -o StrictHostKeyChecking=no symfony-deploy-service.yaml ubuntu@${masterip}:/home/ubuntu/deployment"
                 }
