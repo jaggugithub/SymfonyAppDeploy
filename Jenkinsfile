@@ -4,14 +4,14 @@ pipeline {
         stage('Get Master Public IP') {
             steps {
                 dir('/var/lib/jenkins/workspace/k8sinfra') {
-                sh '''
-                terraform output master_public_ip | sed -n '2p' | sed -e 's/^[ \t]*//' -e 's/,//'  -e 's/^"//' -e 's/"//' >> file.txt
-                '''
-                script {
-                    // trim removes leading and trailing whitespace from the string
-                    myVar = readFile('file.txt').trim()
-                }
-                echo "${myVar}" // prints 'IP'
+                    sh '''
+                    terraform output master_public_ip | sed -n '2p' | sed -e 's/^[ \t]*//' -e 's/,//'  -e 's/^"//' -e 's/"//' >> file.txt
+                    '''
+                    script {
+                        // trim removes leading and trailing whitespace from the string
+                        masterip = readFile('file.txt').trim()
+                    }
+                echo "${masterip}" // prints 'IP'
                 }
             }
         }
@@ -19,9 +19,8 @@ pipeline {
             steps {
                 sshagent(['aws_ssh_key']) {
                     // This is to Copy a file From Jenkins Server to k8s master node
-                    sh "scp -o StrictHostKeyChecking=no symfony-deploy.yaml ubuntu@${myVar}:/home/ubuntu/deployment"
-                    sh "scp -o StrictHostKeyChecking=no symfony-deploy-service.yaml ubuntu@${myVar}:/home/ubuntu/deployment"
-                    sh "docker pull jaggu199/symfony:2"
+                    sh "scp -o StrictHostKeyChecking=no symfony-deploy.yaml ubuntu@${masterip}:/home/ubuntu/deployment"
+                    sh "scp -o StrictHostKeyChecking=no symfony-deploy-service.yaml ubuntu@${masterip}:/home/ubuntu/deployment"
                 }
                 
             }
@@ -30,8 +29,9 @@ pipeline {
             steps {
                 sshagent(['aws_ssh_key']) {
                     // This is to create deployment and service objects in k8s cluster on ubuntu machine(AWS)(Name:k8smaster) from jenkins pipeline
-                    sh """ssh -tt -o StrictHostKeyChecking=no ubuntu@${myVar} << EOF
+                    sh """ssh -tt -o StrictHostKeyChecking=no ubuntu@${masterip} << EOF
                         cd /home/ubuntu/deployment
+                        docker pull jaggu199/symfony:2
                         sudo kubectl create -f symfony-deploy.yaml
                         sudo kubectl create -f symfony-deploy-service.yaml 
                         exit
