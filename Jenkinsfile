@@ -31,7 +31,7 @@ pipeline {
                     // This is to create deployment and service objects in k8s cluster on ubuntu machine(AWS)(Name:k8smaster) from jenkins pipeline
                     sh """ssh -tt -o StrictHostKeyChecking=no ubuntu@${masterip} << EOF
                         cd /home/ubuntu/deployment
-                        docker pull jaggu199/symfony:2
+                        sudo docker pull jaggu199/symfony:2
                         sudo kubectl create -f symfony-deploy.yaml
                         sudo kubectl create -f symfony-deploy-service.yaml 
                         exit
