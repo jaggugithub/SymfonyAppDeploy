@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: sympony-deployment
-        image: jaggu199/symfony:latest
+        image: jaggu199/symfony:1
         ports:
         - containerPort: 80
