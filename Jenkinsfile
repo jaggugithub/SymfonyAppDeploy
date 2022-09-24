@@ -12,6 +12,13 @@ pipeline {
                 echo "${appbuild}" // prints 'App Build Number'
             }
         }
+        stage('Get Build Number in deploy file') {
+            steps {
+                sh """
+                    sed -i "s/appbuildnum/$appbuild/g" symfony-deploy.yaml
+                    """
+            }
+        }
         stage('Code Deployment') {
             steps {
                 sshagent(['aws_ssh_key']) {
@@ -31,7 +38,6 @@ pipeline {
                     sh """ssh -tt -o StrictHostKeyChecking=no ubuntu@${masterip} << EOF
                         cd /home/ubuntu/deployment
                         sudo docker pull jaggu199/symfony:${appbuild}
-                        sudo cat symfony-deploy.yaml | sed -i "s/appbuildnum/$appbuild/g"
                         sudo kubectl create -f symfony-deploy.yaml
                         sudo kubectl create -f symfony-deploy-service.yaml
                         exit
