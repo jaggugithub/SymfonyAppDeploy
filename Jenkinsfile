@@ -30,7 +30,8 @@ pipeline {
                     // This is to create deployment and service objects in k8s cluster on ubuntu machine(AWS)(Name:k8smaster) from jenkins pipeline
                     sh """ssh -tt -o StrictHostKeyChecking=no ubuntu@${masterip} << EOF
                         cd /home/ubuntu/deployment
-                        sudo docker pull ${appbuild}
+                        sudo docker pull jaggu199/symfony:${appbuild}
+                        sudo cat symfony-deploy.yaml | sed -i "s/appbuildnum/$appbuild/g"
                         sudo kubectl create -f symfony-deploy.yaml
                         sudo kubectl create -f symfony-deploy-service.yaml
                         exit
@@ -39,5 +40,11 @@ pipeline {
                 
             }
         }
-    } 
+    }
+// If you want to clean the workspace for this pipeline job please uncomment the post stages section(**BUT NOT THIS LINE**).
+    // post {
+	// 	always {
+	// 	    cleanWs()    // This is to clean the workspace for this job
+	//     }
+ 	// } 
 }
