@@ -47,10 +47,4 @@ pipeline {
             }
         }
     }
-// If you want to clean the workspace for this pipeline job please uncomment the post stages section(**BUT NOT THIS LINE**).
-    // post {
-	// 	always {
-	// 	    cleanWs()    // This is to clean the workspace for this job
-	//     }
- 	// } 
 }
